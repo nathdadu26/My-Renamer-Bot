@@ -24,8 +24,8 @@ load_dotenv()
 API_ID          = int(os.getenv("API_ID", "0"))
 API_HASH        = os.getenv("API_HASH", "")
 BOT_TOKEN       = os.getenv("BOT_TOKEN", "")
-MONGO_URI       = os.getenv("MONGO_URI", "")
-RENAME_USERNAME = os.getenv("RENAME_USERNAME", "")
+MONGO_URI       = os.getenv("MONGO_URI", "mongodb://localhost:27017")
+RENAME_USERNAME = os.getenv("RENAME_USERNAME", "Bot")
 ADMIN_IDS       = [int(x.strip()) for x in os.getenv("ADMIN_IDS", "").split(",") if x.strip()]
 
 BATCH_SIZE      = int(os.getenv("BATCH_SIZE", "10"))
@@ -560,6 +560,19 @@ async def user_worker(client: Client, user_id: int):
 
 
 # =========================
+# DEBUG HANDLER (temporary — sab messages log karo)
+# =========================
+
+@bot.on_message()
+async def debug_all(client: Client, message: Message):
+    logger.info(
+        f"[DEBUG] user_id={message.from_user.id if message.from_user else 'N/A'} "
+        f"chat_type={message.chat.type} "
+        f"text={message.text!r} "
+        f"media={message.media}"
+    )
+
+# =========================
 # MEDIA HANDLER
 # =========================
 
@@ -710,5 +723,5 @@ async def main():
     await asyncio.Event().wait()  # forever chalao
 
 if __name__ == "__main__":
-    logger.info("Starting Bot...")
+    logger.info(f"Starting Bot... ADMIN_IDS={ADMIN_IDS}")
     asyncio.run(main())
